@@ -25,6 +25,7 @@ export async function initialize(){
   db.sequelize = sequelize;
 
   db.test = require("./test.model.js")(sequelize, Sequelize);
+  db.users =require("./users.model.js")(sequelize, Sequelize);
 
   Object.keys(db).forEach(function (modelName) {
     if (db[modelName].associate) {
