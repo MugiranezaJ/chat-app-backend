@@ -1,5 +1,7 @@
 import express from "express";
 import { initialize } from './models';
+import routes from './routes';
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from 'http'
 import socketIO from 'socket.io'
@@ -10,8 +12,10 @@ const io = socketIO(server, {
     cors: 'http://localhost:3000', // use .env variable
 })
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use('/routes', routes)
 
 const db = initialize().then((db) => {
   db.sequelize.sync({force:false});
