@@ -3,19 +3,20 @@ const mysql = require('mysql2/promise');
 
 export async function initialize(){
   const Sequelize = require("sequelize");
-  const { HOST, PORT, USER, PASSWORD, DB } = dbConfig;
-  const connection = await mysql.createConnection({ host:HOST, port:PORT, user:USER, password:PASSWORD });
-  await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB}\`;`);
-  const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-    host: dbConfig.HOST,
-    dialect: dbConfig.dialect,
+  const env = process.env.ENV || 'development';
+  const { host, port, username, password, database } = dbConfig['development'];
+  const connection = await mysql.createConnection({ host, port, user:username, password });
+  await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
+  const sequelize = new Sequelize(dbConfig[env].database, dbConfig[env].username, dbConfig[env].password, {
+    host: dbConfig[env].host,
+    dialect: dbConfig[env].dialect,
     operatorsAliases: 0,
     logging: false,
     pool: {
-      max: dbConfig.pool.max,
-      min: dbConfig.pool.min,
-      acquire: dbConfig.pool.acquire,
-      idle: dbConfig.pool.idle
+      max: dbConfig[env].pool.max,
+      min: dbConfig[env].pool.min,
+      acquire: dbConfig[env].pool.acquire,
+      idle: dbConfig[env].pool.idle
     }
   });
 
