@@ -37,6 +37,11 @@ module.exports = function(sequelize, DataTypes){
             type:DataTypes.STRING,
             allowNull: false
         },
+        profile_picture: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'https://www.cobdoglaps.sa.edu.au/wp-content/uploads/2017/11/placeholder-profile-sq.jpg'
+        },
         created_date: {
             type: DataTypes.DATEONLY,
             allowNull: false,
