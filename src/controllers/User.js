@@ -1,4 +1,4 @@
-import { findUserByEmail, findUserByUsername, generateToken, verifyToken } from '../utils/tools';
+import { findUserByEmail, findUserByUsername, generateToken, getAllUsers, verifyToken } from '../utils/tools';
 import { initialize } from '../models';
 import bcrypt from 'bcrypt';
 
@@ -40,11 +40,14 @@ export class User{
             if(!comperedPassword) return res.status(400).json({status:400, error: "Email or Password is incorrect!"});
             const payload = {
                 role:user.role,
-                email: user.email
+                email: user.email,
+                username: user.username,
+                name: user.name,
+                profile_picture: user.profile_picture
             }
             const token = await generateToken(payload);
             res.cookie('accessToken', token, { httpOnly: false});
-            return res.status(200).json({status:200,message:"login successful!", token})
+            return res.status(200).json({status:200,message:"login successful!", token, user})
         } catch (error) {
             return res.status(500).json({status:500, error: error.message})
         }
@@ -60,4 +63,39 @@ export class User{
           res.status(400).json(error.message);
         }
     };
+
+    static getUserInfo = async (req, res) => {
+        try {
+            const { email } = req.body
+            const user = await findUserByEmail(email)
+            if(!user) return res.status(404).json({status:404, error: `User not found`})
+            res.status(200).json({status: 200, data: user})
+
+        }catch(error){
+            return res.status.json({status:500, error: error.message})
+        }
+    }
+
+    static verifyUserToken = async (req, res, next) => {
+        try{
+            // if(!bearerToken) return res.status(401).json({status: 401, error: 'Please login'});
+            // console.log("Token: " +req.body.token)
+            const token = req.body.token
+
+            const user = await verifyToken(token)
+            if(!user) return res.status(404).json({status: 404, error: 'Invalid token'})
+            return res.status(200).json({status: 200, user})
+        }catch(error){
+            next(error)
+        }
+    }
+    static getAllUsersList = async (req, res, next) => {
+        try{
+            const users = await getAllUsers()
+            if(users.length === 0) return res.status(404).json({status: 404, error: 'No users available'})
+            res.status(200).json({status: 200, data: users})
+        }catch(error){
+            next(error)
+        }
+    }
 }

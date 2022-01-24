@@ -5,12 +5,12 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from 'http'
 import socketIO from 'socket.io'
+import { socketIOController } from "./socketIo";
+
 
 const app = express();
 const server = http.createServer(app)
-const io = socketIO(server, {
-    cors: 'http://localhost:3000', // use .env variable
-})
+
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
@@ -37,17 +37,8 @@ app.use((err, req, res, next) => {
 // not found url
 app.use('*', (req, res) => res.status(404).json({status:404, error:'url Not found 404'}));
 
-io.on('connection', socket =>{
-    console.log('client connected: ' + socket.id)
-    socket.join('default-room')
-    socket.on('disconnect', reason => {
-        console.log(reason)
-    })
-})
-
-setInterval(() =>{
-    io.to('default-room').emit('time', new Date())
-}, 5000)
+const io = socketIO(server, { cors: 'http://localhost:3000'})
+io.on("connection", socketIOController(io))
 
 const PORT = process.env.PORT || 4200;
 server.listen(PORT, (err) => {
