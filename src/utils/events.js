@@ -1,4 +1,5 @@
 module.exports = {
     NEW_USER:"NEW_USER",
-    LOGOUT:"LOGOUT"
+    LOGOUT:"LOGOUT",
+    MESSAGE_SEND:"MESSAGE_SEND",
 }
