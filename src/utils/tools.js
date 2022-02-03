@@ -48,3 +48,10 @@ export const addUsers = ( users, user ) => {
     users[ user.username ] = user
     return users
 }
+
+export const createMessage = ( message, sender ) => ({
+    id: v4(),
+    time: new Date(Date.now()),
+    message,
+    sender
+})
